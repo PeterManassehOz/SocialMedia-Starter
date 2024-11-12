@@ -5,3 +5,5 @@ const API = axios.create({
 });
 
 export const getTimelinePosts = (id) => API.get(`/posts/${id}/timeline`);
+
+export const likePost = (id, userId) => API.put(`post/${id}/like`, {userId: userId})

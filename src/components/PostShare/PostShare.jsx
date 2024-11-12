@@ -4,8 +4,12 @@ import ProfileImage from "../../img/profileImg.jpg";
 import { UilScenery, UilPlayCircle, UilLocationPoint, UilSchedule, UilTimes } from '@iconscout/react-unicons';
 import { useDispatch, useSelector } from "react-redux";
 import { uploadImage, uploadPost } from "../../actions/uploadAction";
+import  Cover from '../../img/cover.jpg'
+import  Profile from '../../img/profileImg.jpg'
 
 const PostShare = () => {
+
+    const serverPublic = process.env.REACT_APP_PUBLIC_FOLDER;
     const loading = useSelector((state) => state.postReducer.uploading);
     const [image, setImage] = useState(null);
     const imageRef = useRef();
@@ -52,7 +56,7 @@ const PostShare = () => {
 
     return (
         <div className="PostShare">
-            <img src={ProfileImage} alt="Profile" />
+            <img src={user.profilePicture? serverPublic + user.profilePicture : serverPublic + "image-icon.jpeg"} alt="Profile" />
             <div>
                 <input ref={desc} required type="text" placeholder="What's happening?" />
                 <div className="postOptions">

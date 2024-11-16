@@ -10,19 +10,50 @@ import Home from "../../img/home.png";
 import Noti from "../../img/noti.png";
 import Comment from "../../img/comment.png";
 import ChatBox from "../../components/ChatBox/ChatBox.jsx";
+import {io} from "socket.io-client";
 
 const Chat = () => {
 
     const {user} = useSelector((state)=> state.authReducer.authData);
     const [chats, setChats] = useState([]);
     const [currentChat, setCurrentChat] = useState(null);
+    const [onlineUsers, setOnlineUsers] = useState([]);
+    const [sendMessage, setSendMessage] = useState(null);
+    const [receiveMessage, setReceiveMessage] = useState(null);
+    const socket = useRef();
     
+
+    // send message to socket server
+    useEffect (()=>{
+        if (sendMessage !== null){
+            socket.current.emit("send-message", sendMessage)
+        }
+    }, [sendMessage])
+
+
+    useEffect(()=>{
+        socket.current = io("http://localhost:8800");
+        socket.current.emit("new-user-add", user._id);
+        socket.current.on("get-users", (users)=>{
+            setOnlineUsers(users);
+        })
+    }, [user])
+
+
+       // receive message from socket server
+
+       useEffect (()=>{
+        socket.current.on("receive-message", (data)=>{
+            setReceiveMessage(data);
+        })
+    }, [])
 
     useEffect(()=>{
         const getChats = async()=> {
             try {
                 const {data} = await userChats(user._id)
                 setChats(data)
+                //console.log(data)
             } catch (error) {
                 console.log(error)
             }
@@ -57,7 +88,7 @@ const Chat = () => {
              </div>
             </div>
             {/* chat body */}
-           <ChatBox chat={currentChat} currentUser={user._id} />
+           <ChatBox chat={currentChat} currentUser={user._id} setSendMessage={setSendMessage}  receiveMessage={receiveMessage}/>
         </div>
     </div>
     );
